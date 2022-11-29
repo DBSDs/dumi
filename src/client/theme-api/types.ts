@@ -80,6 +80,7 @@ export interface IRouteMeta {
     };
     atomId?: string;
     filename?: string;
+    extra: string;
     [key: string]: any;
   };
   // route toc

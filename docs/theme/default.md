@@ -119,4 +119,11 @@ hero:
       link: /getting-started
 ```
 
+#### extra
+
+- 类型：`String`
+- 默认值：`null`
+- 详细：
+
+配置 Tab 页面紧跟的 Tab 区域
 <!-- md config end -->

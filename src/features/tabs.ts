@@ -9,6 +9,8 @@ export interface IContentTab {
   id?: string;
   test?: RegExp;
   component: string;
+  extra?: string;
+  action?: string;
 }
 
 export function isTabRouteFile(file: string) {
@@ -30,8 +32,9 @@ export default (api: IApi) => {
     key: string;
     id: string;
     file: string;
+    extra?: string;
+    action?: string;
   }[] = [];
-
   api.describe({ key: undefined });
 
   // collect extra content tabs before routes generate
@@ -70,6 +73,8 @@ export default (api: IApi) => {
           key: tabKey,
           id: routeId,
           file: route.file,
+          extra: '',
+          action: '',
         });
         if (!routesTabMapping[parentFile]?.includes(routeId)) {
           routesTabMapping[parentFile] ??= [];
@@ -96,9 +101,10 @@ export default (api: IApi) => {
         key: tab.key,
         id: tab.id!,
         file: tab.component,
+        extra: tab.extra,
+        action: tab.action,
       })),
     );
-
     return routes;
   });
 
@@ -121,24 +127,44 @@ export default (api: IApi) => {
           index: metaFiles.length,
         });
       });
-
       return metaFiles;
     },
   });
 
   // generate tabs tmp file
   api.onGenerateFiles(() => {
+    console.log(tabs, 'tabs');
     api.writeTmpFile({
       noPluginDir: true,
       path: TABS_META_PATH,
       content: Mustache.render(
         `{{#tabs}}
-import * as tab{{{index}}} from '{{{file}}}';
+import tab{{{index}}} from '{{{file}}}';
+
+{{#extra}}
+import tabExtra{{{index}}} from '{{{extra}}}';
+{{/extra}}
+
+{{#action}}
+import tabAction{{{index}}} from '{{{action}}}';
+{{/action}}
+
 {{/tabs}}
 
 export const tabs = {
   {{#tabs}}
-  '{{{id}}}': { key: '{{{key}}}', components: tab{{{index}}} },
+  '{{{id}}}': {
+    key: '{{{key}}}',
+    components: {
+      default: tab{{{index}}},
+    {{#extra}}
+      Extra: tabExtra{{{index}}},
+    {{/extra}}
+    {{#action}}
+      Action: tabAction{{{index}}}
+    {{/action}}
+    }
+  },
   {{/tabs}}
 }
 `,

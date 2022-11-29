@@ -32,8 +32,11 @@ export default (api: IApi) => {
     key: 'test',
     component: require.resolve('./a.tsx'),
     test: /^\/components\//,
+    extra: require.resolve('./extra.tsx'),
+    action: require.resolve('./actions.tsx'),
   }));
 };
 ```
 
 `component` 放入我们自定义的 Tab 内容，`test` 可以写入正则来匹配路由，这样我们就实现了为 `/componets` 下的路由页面添加自定义 Tab。
+其中，`extra` 和 `action` 都是可选项，`extra` 可以自定义每个 Tab 的紧跟内容，`action` 可以自定义整个tab栏的右侧内容。
